@@ -19,7 +19,7 @@ declare namespace gapi.client {
             create: (parameters: CreateParameters) => HttpRequest<FileResource>;
             list: (parameters: ListParameters) => HttpRequest<FileListResource>;
             watch: (parameters: WatchParameters) => HttpRequest<ChannelResource>;
-        }
+        };
 
         interface GetParameters {
             fileId: string;
@@ -31,7 +31,7 @@ declare namespace gapi.client {
 
         interface UpdateParameters {
             fileId: string;
-            resource?: FileResource | undefined
+            resource?: FileResource | undefined;
             convert?: boolean | undefined;
             ocrLanguage?: string | undefined;
             keepRevisionForever?: boolean | undefined;

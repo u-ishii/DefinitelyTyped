@@ -68,7 +68,7 @@ function maybeEnableButtons() {
 function handleAuthClick() {
     tokenClient.callback = async (resp: any) => {
         if (resp.error !== undefined) {
-        throw (resp);
+            throw resp;
         }
         document.getElementById('signout_button')!.style.visibility = 'visible';
         document.getElementById('authorize_button')!.innerText = 'Refresh';
@@ -78,10 +78,10 @@ function handleAuthClick() {
     if (gapi.client.getToken() === null) {
         // Prompt the user to select a Google Account and ask for consent to share their data
         // when establishing a new session.
-        tokenClient.requestAccessToken({prompt: 'consent'});
+        tokenClient.requestAccessToken({ prompt: 'consent' });
     } else {
         // Skip display of account chooser and consent dialog for an existing session.
-        tokenClient.requestAccessToken({prompt: ''});
+        tokenClient.requestAccessToken({ prompt: '' });
     }
 }
 
@@ -105,10 +105,12 @@ function handleSignoutClick() {
 async function listFiles() {
     let response;
     try {
-        response = await gapi.client.drive.files.list({
-            'pageSize': 10,
-            'fields': 'files(id, name)',
-        }).then();
+        response = await gapi.client.drive.files
+            .list({
+                pageSize: 10,
+                fields: 'files(id, name)',
+            })
+            .then();
     } catch (err) {
         document.getElementById('content')!.innerText = err.message;
         return;
@@ -119,8 +121,6 @@ async function listFiles() {
         return;
     }
     // Flatten to string to display
-    const output = files.reduce(
-        (str, file) => `${str}${file.name} (${file.id}\n`,
-        'Files:\n');
+    const output = files.reduce((str, file) => `${str}${file.name} (${file.id}\n`, 'Files:\n');
     document.getElementById('content')!.innerText = output;
 }
