@@ -76,11 +76,11 @@ declare namespace gapi.client {
         interface ListParameters {
             corpora?: string | undefined;
             corpus?: string | undefined;
+            driveId?: string | undefined;
             includeTeamDriveItems?: boolean | undefined;
             pageSize?: number | undefined;
             orderBy?: string | undefined;
             pageToken?: string | undefined;
-            projection?: string | undefined;
             q?: string | undefined;
             spaces?: string | undefined;
             supportsTeamDrives?: boolean | undefined;
