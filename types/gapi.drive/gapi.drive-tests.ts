@@ -1,111 +1,124 @@
-/* Example taken from Google Drive API JavaScript Quickstart https://developers.google.com/drive/v2/web/quickstart/js */
+/* Example taken from Google Drive API JavaScript Quickstart https://developers.google.com/drive/api/quickstart/js */
 
-{
-    // Client ID and API key from the Developer Console
-    var CLIENT_ID = '<YOUR_CLIENT_ID>';
+// TODO(developer): Set to client ID and API key from the Developer Console
+const CLIENT_ID = '<YOUR_CLIENT_ID>';
+const API_KEY = '<YOUR_API_KEY>';
 
-    // Authorization scopes required by the API; multiple scopes can be
-    // included, separated by spaces.
-    var SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly'];
+// Discovery doc URL for APIs used by the quickstart
+const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
 
-    /**
-     * Check if current user has authorized this application.
-     */
-    function checkAuth() {
-        gapi.auth.authorize(
-            {
-                'client_id': CLIENT_ID,
-                'scope': SCOPES.join(' '),
-                'immediate': true
-            }, handleAuthResult);
+// Authorization scopes required by the API; multiple scopes can be
+// included, separated by spaces.
+const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
+
+let tokenClient;
+let gapiInited = false;
+let gisInited = false;
+
+document.getElementById('authorize_button').style.visibility = 'hidden';
+document.getElementById('signout_button').style.visibility = 'hidden';
+
+/**
+ * Callback after api.js is loaded.
+ */
+function gapiLoaded() {
+    gapi.load('client', initializeGapiClient);
+}
+
+/**
+ * Callback after the API client is loaded. Loads the
+ * discovery doc to initialize the API.
+ */
+async function initializeGapiClient() {
+    await gapi.client.init({
+        apiKey: API_KEY,
+        discoveryDocs: [DISCOVERY_DOC],
+    });
+    gapiInited = true;
+    maybeEnableButtons();
+}
+
+/**
+ * Callback after Google Identity Services are loaded.
+ */
+function gisLoaded() {
+    tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: SCOPES,
+        callback: '', // defined later
+    });
+    gisInited = true;
+    maybeEnableButtons();
+}
+
+/**
+ * Enables user interaction after all libraries are loaded.
+ */
+function maybeEnableButtons() {
+    if (gapiInited && gisInited) {
+        document.getElementById('authorize_button').style.visibility = 'visible';
     }
+}
 
-    /**
-     * Handle response from authorization server.
-     *
-     * @param {Object} authResult Authorization result.
-     */
-    function handleAuthResult(authResult: GoogleApiOAuth2TokenObject) {
-        var authorizeDiv = document.getElementById('authorize-div')!;
-        if (authResult && !authResult.error) {
-            // Hide auth UI, then load client library.
-            authorizeDiv.style.display = 'none';
-            loadDriveApi();
-        } else {
-            // Show auth UI, allowing the user to initiate authorization by
-            // clicking authorize button.
-            authorizeDiv.style.display = 'inline';
+/**
+ *  Sign in the user upon button click.
+ */
+function handleAuthClick() {
+    tokenClient.callback = async (resp) => {
+        if (resp.error !== undefined) {
+        throw (resp);
         }
+        document.getElementById('signout_button').style.visibility = 'visible';
+        document.getElementById('authorize_button').innerText = 'Refresh';
+        await listFiles();
+    };
+
+    if (gapi.client.getToken() === null) {
+        // Prompt the user to select a Google Account and ask for consent to share their data
+        // when establishing a new session.
+        tokenClient.requestAccessToken({prompt: 'consent'});
+    } else {
+        // Skip display of account chooser and consent dialog for an existing session.
+        tokenClient.requestAccessToken({prompt: ''});
     }
+}
 
-    /**
-     * Initiate auth flow in response to user clicking authorize button.
-     *
-     * @param {Event} event Button click event.
-     */
-    function handleAuthClick(event: MouseEvent) {
-        gapi.auth.authorize(
-            {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
-            handleAuthResult);
-        return false;
+/**
+ *  Sign out the user upon button click.
+ */
+function handleSignoutClick() {
+    const token = gapi.client.getToken();
+    if (token !== null) {
+        google.accounts.oauth2.revoke(token.access_token);
+        gapi.client.setToken('');
+        document.getElementById('content').innerText = '';
+        document.getElementById('authorize_button').innerText = 'Authorize';
+        document.getElementById('signout_button').style.visibility = 'hidden';
     }
+}
 
-
-    /**
-     * Load Google Drive client library.
-     */
-    function loadDriveApi() {
-        gapi.client.load('drive', 'v3', () => null);
-    }
-
-    /**
-     * Append a pre element to the body containing the given message
-     * as its text node. Used to display the results of the API call.
-     *
-     * @param {string} message Text to be placed in pre element.
-     */
-    function appendPre(message: string) {
-        var pre = document.getElementById('content')!;
-        var textContent = document.createTextNode(message + '\n');
-        pre.appendChild(textContent);
-    }
-
-    /**
-     * Print files.
-     */
-    function listFiles() {
-        gapi.client.drive.files.list({
-            'pageSize': 10
-        }).then(function(response: any) {
-            appendPre('Files:');
-            var files = response.result.items;
-            if (files && files.length > 0) {
-                for (var i = 0; i < files.length; i++) {
-                    var file = files[i];
-                    appendPre(file.title + ' (' + file.id + ')');
-                }
-            } else {
-                appendPre('No files found.');
-            }
+/**
+ * Print metadata for first 10 files.
+ */
+async function listFiles() {
+    let response;
+    try {
+        response = await gapi.client.drive.files.list({
+        'pageSize': 10,
+        'fields': 'files(id, name)',
         });
+    } catch (err) {
+        document.getElementById('content').innerText = err.message;
+        return;
     }
-
-    /**
-     * Get file.
-     */
-    function getFile() {
-        gapi.client.drive.files.get({
-            fileId: '1',
-            supportsAllDrives: true,
-            fields: 'embedLink, title, mimeType, description',
-        }).then(function(response: any) {
-            appendPre('File:');
-            var file = response.result;
-            if (file) {
-                appendPre(file.title + ' (' + file.id + ')');
-            } else {
-                appendPre('No files found.');
-            }
-        });
+    const files = response.result.files;
+    if (!files || files.length == 0) {
+        document.getElementById('content').innerText = 'No files found.';
+        return;
     }
+    // Flatten to string to display
+    const output = files.reduce(
+        (str, file) => `${str}${file.name} (${file.id}\n`,
+        'Files:\n');
+    document.getElementById('content').innerText = output;
 }
