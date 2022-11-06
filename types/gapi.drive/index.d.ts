@@ -24,10 +24,7 @@ declare namespace gapi.client {
         interface GetParameters {
             fileId: string;
             acknowledgeAbuse?: boolean | undefined;
-            projection?: string | undefined;
-            revisionId?: string | undefined;
             supportsTeamDrives?: boolean | undefined;
-            updateViewedDate?: boolean | undefined;
             supportsAllDrives?: boolean | undefined;
             fields?: string | undefined;
         }
@@ -36,31 +33,20 @@ declare namespace gapi.client {
             fileId: string;
             resource?: FileResource | undefined
             convert?: boolean | undefined;
-            modifiedDateBehavior?: string | undefined;
-            newRevision?: boolean | undefined;
-            ocr?: boolean | undefined;
             ocrLanguage?: string | undefined;
-            pinned?: boolean | undefined;
+            keepRevisionForever?: boolean | undefined;
             removeParents?: string | undefined;
-            setModifiedDate?: boolean | undefined;
             supportsTeamDrives?: boolean | undefined;
-            timedTextLanguage?: string | undefined;
-            timedTextTrackName?: string | undefined;
-            updateViewedData?: boolean | undefined;
             useContentAsIndexableText?: boolean | undefined;
         }
 
         interface CopyParameters {
             fileId: string;
             resource?: FileResource | undefined;
-            convert?: boolean | undefined;
-            ocr?: boolean | undefined;
             ocrLanguage?: string | undefined;
-            pinned?: boolean | undefined;
+            keepRevisionForever?: boolean | undefined;
             supportsTeamDrives?: boolean | undefined;
-            timedTextLanguage?: string | undefined;
-            timedTextTrackName?: string | undefined;
-            visibility?: string | undefined;
+            ignoreDefaultVisibility?: boolean | undefined;
         }
 
         interface DeleteParameters {
@@ -74,28 +60,24 @@ declare namespace gapi.client {
         }
 
         interface GenerateIdsParameters {
-            maxResults?: number | undefined;
+            count?: number | undefined;
             space?: string | undefined;
         }
 
         interface CreateParameters {
             uploadType: string;
-            convert?: boolean | undefined;
-            ocr?: boolean | undefined;
             ocrLanguage?: string | undefined;
-            pinned?: boolean | undefined;
+            keepRevisionForever?: boolean | undefined;
             supportsTeamDrives?: boolean | undefined;
-            timedTextLanguage?: string | undefined;
-            timedTextTrackName?: string | undefined;
             usecontentAsIndexableText?: boolean | undefined;
-            visibility?: string | undefined;
+            ignoreDefaultVisibility?: boolean | undefined;
         }
 
         interface ListParameters {
             corpora?: string | undefined;
             corpus?: string | undefined;
             includeTeamDriveItems?: boolean | undefined;
-            maxResults?: number | undefined;
+            pageSize?: number | undefined;
             orderBy?: string | undefined;
             pageToken?: string | undefined;
             projection?: string | undefined;
@@ -115,38 +97,28 @@ declare namespace gapi.client {
         interface FileResource {
             kind: 'drive#file';
             id: string;
-            etag: string;
-            selfLink: string;
             webContentLink: string;
             webViewLink: string;
-            alternateLink: string;
-            embedLink: string;
-            // openWithLinks
-            defaultOpenWithLink: string;
             iconLink: string;
             hasThumbnail: boolean;
             thumbnailLink: string;
-            thumbnail: {
-                image: Uint8Array;
-                mimType: string;
-            };
-            title: string;
+            name: string;
             mimeType: string;
             description: string;
+            starred: boolean;
+            trashed: boolean;
+            viewedByMe: boolean;
             labels: {
-                starred: boolean;
                 hidden: boolean;
-                trashed: boolean;
                 restricted: boolean;
-                viewed: boolean;
                 modified: boolean;
             };
-            createdDate: Date;
-            modifiedDate: Date;
-            modifiedByMeDate: Date;
-            lastViewedByMeDate: Date;
+            createdTime: Date;
+            modifiedTime: Date;
+            modifiedByMeTime: Date;
+            viewedByMeTime: Date;
             markedViewedByMeDate: Date;
-            sharedWithMeDate: Date;
+            sharedWithMeTime: Date;
             version: number;
             sharingUser: {
                 kind: 'drive#user';
@@ -159,10 +131,13 @@ declare namespace gapi.client {
                 emailAddress: string;
             };
             parents: ParentResource[];
-            downloadUrl: string;
             // exportLinks
-            indexableText: {
-                text: string;
+            contentHints: {
+                indexableText: string;
+                thumbnail: {
+                    image: Uint8Array;
+                    mimType: string;
+                };
             };
             userPermission: PermissionResource;
             permissions: PermissionResource[];
@@ -171,9 +146,8 @@ declare namespace gapi.client {
             fileExtension: string;
             fullFileExtension: string;
             md5Checksum: string;
-            fileSize: number;
+            size: number;
             quotaBytesUsed: number;
-            ownerNames: string[];
             owners: {
                 kind: 'drive#user';
                 displayName: string;
@@ -185,7 +159,6 @@ declare namespace gapi.client {
                 emailAddress: string;
             }[];
             teamDriveId: string;
-            lastModifyingUserName: string;
             lastModifyingUser: {
                 kind: 'drive#user';
                 displayName: string;
@@ -216,11 +189,9 @@ declare namespace gapi.client {
                 canTrash: boolean;
                 canUntrash: boolean;
             };
-            editable: boolean;
             canComment: boolean;
             canReadRevisions: boolean;
             shareable: boolean;
-            copyable: boolean;
             writersCanShare: boolean;
             shared: boolean;
             explicitlyTrashed: boolean;
@@ -235,7 +206,6 @@ declare namespace gapi.client {
                 emailAddress: string;
             };
             trashedDate: Date;
-            appDataContents: boolean;
             headRevisionId: string;
             properties: PropertiesResource[];
             folderColorRgb: string;
@@ -248,7 +218,7 @@ declare namespace gapi.client {
                     longitude: number;
                     altitude: number;
                 };
-                date: string;
+                time: string;
                 cameraMake: string;
                 cameraModel: string;
                 exposureTime: number;
@@ -273,16 +243,14 @@ declare namespace gapi.client {
             };
             spaces: string[];
             isAppAuthorized: boolean;
+            viewersCanCopyContent: boolean;
         }
 
         interface FileListResource {
             kind: 'drive#fileList';
-            etag: string;
-            selfLink: string;
             nextPageToken: string;
-            nextLink: string;
             incompleteSearch: boolean;
-            items: FileResource[];
+            files: FileResource[];
         }
 
         interface ParentResource {
