@@ -55,7 +55,7 @@
      * Load Google Drive client library.
      */
     function loadDriveApi() {
-        gapi.client.load('drive', 'v2', () => null);
+        gapi.client.load('drive', 'v3', () => null);
     }
 
     /**
@@ -75,7 +75,7 @@
      */
     function listFiles() {
         gapi.client.drive.files.list({
-            'maxResults': 10
+            'pageSize': 10
         }).then(function(response: any) {
             appendPre('Files:');
             var files = response.result.items;
