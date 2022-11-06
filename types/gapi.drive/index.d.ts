@@ -23,10 +23,10 @@ declare namespace gapi.client {
 
         interface GetParameters {
             fileId: string;
+            fields?: string | undefined;
             acknowledgeAbuse?: boolean | undefined;
             supportsTeamDrives?: boolean | undefined;
             supportsAllDrives?: boolean | undefined;
-            fields?: string | undefined;
         }
 
         interface UpdateParameters {
@@ -61,6 +61,7 @@ declare namespace gapi.client {
 
         interface GenerateIdsParameters {
             count?: number | undefined;
+            fields: string | undefined;
             space?: string | undefined;
         }
 
@@ -77,6 +78,7 @@ declare namespace gapi.client {
             corpora?: string | undefined;
             corpus?: string | undefined;
             driveId?: string | undefined;
+            fields: string | undefined;
             includeTeamDriveItems?: boolean | undefined;
             pageSize?: number | undefined;
             orderBy?: string | undefined;
@@ -89,6 +91,7 @@ declare namespace gapi.client {
 
         interface WatchParameters {
             fileId: string;
+            fields: string | undefined;
             resource?: WatchResource | undefined;
             revisionId?: string | undefined;
             supportsTeamDrives?: boolean | undefined;
