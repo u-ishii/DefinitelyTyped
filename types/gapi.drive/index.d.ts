@@ -69,7 +69,7 @@ declare namespace gapi.client {
             ocrLanguage?: string | undefined;
             keepRevisionForever?: boolean | undefined;
             supportsTeamDrives?: boolean | undefined;
-            usecontentAsIndexableText?: boolean | undefined;
+            useContentAsIndexableText?: boolean | undefined;
             ignoreDefaultVisibility?: boolean | undefined;
         }
 
@@ -117,7 +117,6 @@ declare namespace gapi.client {
             modifiedTime: Date;
             modifiedByMeTime: Date;
             viewedByMeTime: Date;
-            markedViewedByMeDate: Date;
             sharedWithMeTime: Date;
             version: number;
             sharingUser: {
@@ -136,7 +135,7 @@ declare namespace gapi.client {
                 indexableText: string;
                 thumbnail: {
                     image: Uint8Array;
-                    mimType: string;
+                    mimeType: string;
                 };
             };
             userPermission: PermissionResource;
@@ -205,7 +204,7 @@ declare namespace gapi.client {
                 permissionId: string;
                 emailAddress: string;
             };
-            trashedDate: Date;
+            trashedTime: Date;
             headRevisionId: string;
             properties: PropertiesResource[];
             folderColorRgb: string;
