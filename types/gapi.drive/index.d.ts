@@ -18,9 +18,6 @@ declare namespace gapi.client {
             generateIds: (parameters: GenerateIdsParameters) => HttpRequest<IdsResource>;
             create: (parameters: CreateParameters) => HttpRequest<FileResource>;
             list: (parameters: ListParameters) => HttpRequest<FileListResource>;
-            touch: (parameters: TouchParameters) => HttpRequest<FileResource>;
-            trash: (parameters: TrashParameters) => HttpRequest<FileResource>;
-            untrash: (parameters: UntrashParameters) => HttpRequest<FileResource>;
             watch: (parameters: WatchParameters) => HttpRequest<ChannelResource>;
         }
 
@@ -107,23 +104,6 @@ declare namespace gapi.client {
             supportsTeamDrives?: boolean | undefined;
             teamDriveId?: string | undefined;
         }
-
-        interface TouchParameters {
-            fileId: string;
-            supportsTeamDrives?: boolean | undefined;
-        }
-
-        interface TrashParameters {
-            fileId: string;
-            supportsTeamDrives?: boolean | undefined;
-        }
-
-
-        interface UntrashParameters {
-            fileId: string;
-            supportsTeamDrives?: boolean | undefined;
-        }
-
 
         interface WatchParameters {
             fileId: string;
