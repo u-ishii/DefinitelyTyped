@@ -10,13 +10,13 @@ declare namespace gapi.client {
     export module drive {
         const files: {
             get: (parameters: GetParameters) => HttpRequest<FileResource>;
-            patch: (parameters: PatchParameters) => HttpRequest<FileResource>;
+            update: (parameters: UpdateParameters) => HttpRequest<FileResource>;
             copy: (parameters: CopyParameters) => HttpRequest<FileResource>;
             delete: (parameters: DeleteParameters) => HttpRequest<any>;
             emptyTrash: () => HttpRequest<any>;
             export: (parameters: ExportParameters) => HttpRequest<FileResource>;
             generateIds: (parameters: GenerateIdsParameters) => HttpRequest<IdsResource>;
-            insert: (parameters: InsertParameters) => HttpRequest<FileResource>;
+            create: (parameters: CreateParameters) => HttpRequest<FileResource>;
             list: (parameters: ListParameters) => HttpRequest<FileListResource>;
             touch: (parameters: TouchParameters) => HttpRequest<FileResource>;
             trash: (parameters: TrashParameters) => HttpRequest<FileResource>;
@@ -35,7 +35,7 @@ declare namespace gapi.client {
             fields?: string | undefined;
         }
 
-        interface PatchParameters {
+        interface UpdateParameters {
             fileId: string;
             resource?: FileResource | undefined
             convert?: boolean | undefined;
@@ -81,7 +81,7 @@ declare namespace gapi.client {
             space?: string | undefined;
         }
 
-        interface InsertParameters {
+        interface CreateParameters {
             uploadType: string;
             convert?: boolean | undefined;
             ocr?: boolean | undefined;
