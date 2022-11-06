@@ -1,4 +1,4 @@
-// Type definitions for Google Drive API v2
+// Type definitions for Google Drive API v3
 // Project: https://developers.google.com/drive/
 // Definitions by: Sam Baxter <https://github.com/baxtersa>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
