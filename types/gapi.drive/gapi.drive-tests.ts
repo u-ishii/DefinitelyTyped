@@ -1,6 +1,8 @@
 /* Example taken from Google Drive API JavaScript Quickstart https://developers.google.com/drive/api/quickstart/js */
 
-// TODO(developer): Set to client ID and API key from the Developer Console
+/// <reference types="google.accounts" />
+
+// Set to client ID and API key from the Developer Console
 const CLIENT_ID = '<YOUR_CLIENT_ID>';
 const API_KEY = '<YOUR_API_KEY>';
 
@@ -11,12 +13,12 @@ const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/res
 // included, separated by spaces.
 const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
 
-let tokenClient;
+let tokenClient: any;
 let gapiInited = false;
 let gisInited = false;
 
-document.getElementById('authorize_button').style.visibility = 'hidden';
-document.getElementById('signout_button').style.visibility = 'hidden';
+document.getElementById('authorize_button')!.style.visibility = 'hidden';
+document.getElementById('signout_button')!.style.visibility = 'hidden';
 
 /**
  * Callback after api.js is loaded.
@@ -45,7 +47,7 @@ function gisLoaded() {
     tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
         scope: SCOPES,
-        callback: '', // defined later
+        callback: () => {},
     });
     gisInited = true;
     maybeEnableButtons();
@@ -56,7 +58,7 @@ function gisLoaded() {
  */
 function maybeEnableButtons() {
     if (gapiInited && gisInited) {
-        document.getElementById('authorize_button').style.visibility = 'visible';
+        document.getElementById('authorize_button')!.style.visibility = 'visible';
     }
 }
 
@@ -64,12 +66,12 @@ function maybeEnableButtons() {
  *  Sign in the user upon button click.
  */
 function handleAuthClick() {
-    tokenClient.callback = async (resp) => {
+    tokenClient.callback = async (resp: any) => {
         if (resp.error !== undefined) {
         throw (resp);
         }
-        document.getElementById('signout_button').style.visibility = 'visible';
-        document.getElementById('authorize_button').innerText = 'Refresh';
+        document.getElementById('signout_button')!.style.visibility = 'visible';
+        document.getElementById('authorize_button')!.innerText = 'Refresh';
         await listFiles();
     };
 
@@ -89,11 +91,11 @@ function handleAuthClick() {
 function handleSignoutClick() {
     const token = gapi.client.getToken();
     if (token !== null) {
-        google.accounts.oauth2.revoke(token.access_token);
-        gapi.client.setToken('');
-        document.getElementById('content').innerText = '';
-        document.getElementById('authorize_button').innerText = 'Authorize';
-        document.getElementById('signout_button').style.visibility = 'hidden';
+        google.accounts.oauth2.revoke(token.access_token, () => {});
+        gapi.client.setToken(token);
+        document.getElementById('content')!.innerText = '';
+        document.getElementById('authorize_button')!.innerText = 'Authorize';
+        document.getElementById('signout_button')!.style.visibility = 'hidden';
     }
 }
 
@@ -104,21 +106,21 @@ async function listFiles() {
     let response;
     try {
         response = await gapi.client.drive.files.list({
-        'pageSize': 10,
-        'fields': 'files(id, name)',
-        });
+            'pageSize': 10,
+            'fields': 'files(id, name)',
+        }).then();
     } catch (err) {
-        document.getElementById('content').innerText = err.message;
+        document.getElementById('content')!.innerText = err.message;
         return;
     }
-    const files = response.result.files;
-    if (!files || files.length == 0) {
-        document.getElementById('content').innerText = 'No files found.';
+    const files = response.files;
+    if (!files || files.length === 0) {
+        document.getElementById('content')!.innerText = 'No files found.';
         return;
     }
     // Flatten to string to display
     const output = files.reduce(
         (str, file) => `${str}${file.name} (${file.id}\n`,
         'Files:\n');
-    document.getElementById('content').innerText = output;
+    document.getElementById('content')!.innerText = output;
 }
